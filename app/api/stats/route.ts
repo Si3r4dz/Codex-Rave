@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { calculateDashboardStats } from '@/lib/stats';
+import { DashboardStatsService } from '@/lib/services/dashboard-stats.service';
+import { handleApiError } from '@/lib/utils/api-error';
+
+const statsService = new DashboardStatsService();
 
 export async function GET() {
   try {
-    const stats = await calculateDashboardStats();
+    const stats = await statsService.calculateStats();
     return NextResponse.json(stats);
   } catch (error) {
-    console.error('Error fetching stats:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch statistics', message: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Failed to fetch statistics');
   }
 }
 

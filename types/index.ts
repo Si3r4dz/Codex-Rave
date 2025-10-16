@@ -62,3 +62,25 @@ export interface Settings {
   currency: 'PLN' | 'USD' | 'EUR' | 'GBP';
 }
 
+export interface TaskTimeEntry {
+  task_id: string;
+  task_name: string;
+  hours: number;
+  dates: string[]; // List of dates worked on this task
+}
+
+export interface ProjectDetails {
+  project_id: string;
+  project_name: string;
+  total_hours: number;
+  total_income: number | null;
+  hourly_rate: number | null;
+  daily_breakdown: DailyStats[];
+  tasks: TaskTimeEntry[];
+  stats: {
+    days_worked: number;
+    avg_hours_per_day: number;
+    most_productive_day: { date: string; hours: number } | null;
+  };
+}
+

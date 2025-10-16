@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { ProjectStats } from '@/types';
+import ProjectDetailsModal from './ProjectDetailsModal';
 
 interface ProjectTableProps {
   projects: ProjectStats[];
@@ -15,6 +16,7 @@ export default function ProjectTable({ projects, currency = 'PLN' }: ProjectTabl
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('hours');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [selectedProject, setSelectedProject] = useState<{id: string, name: string} | null>(null);
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return 'N/A';
     
@@ -199,7 +201,11 @@ export default function ProjectTable({ projects, currency = 'PLN' }: ProjectTabl
               </tr>
             ) : (
               filteredAndSortedProjects.map((project) => (
-              <tr key={project.project_id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+              <tr 
+                key={project.project_id} 
+                onClick={() => setSelectedProject({id: project.project_id, name: project.project_name})}
+                className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+              >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900 dark:text-slate-100">{project.project_name}</div>
                 </td>
@@ -276,7 +282,8 @@ export default function ProjectTable({ projects, currency = 'PLN' }: ProjectTabl
           filteredAndSortedProjects.map((project) => (
             <div 
               key={project.project_id}
-              className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-slate-700"
+              onClick={() => setSelectedProject({id: project.project_id, name: project.project_name})}
+              className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-slate-700 cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
             >
               <div className="flex justify-between items-start mb-3">
                 <h3 className="font-semibold text-gray-900 dark:text-slate-100 text-lg">{project.project_name}</h3>
@@ -318,6 +325,17 @@ export default function ProjectTable({ projects, currency = 'PLN' }: ProjectTabl
           ))
         )}
       </div>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <ProjectDetailsModal
+          isOpen={!!selectedProject}
+          onClose={() => setSelectedProject(null)}
+          projectId={selectedProject.id}
+          projectName={selectedProject.name}
+          currency={currency}
+        />
+      )}
     </>
   );
 }
