@@ -60,6 +60,7 @@ export interface DashboardStats {
 export interface Settings {
   default_hourly_rate: string;
   currency: 'PLN' | 'USD' | 'EUR' | 'GBP';
+  daily_hours_target: string;
 }
 
 export interface TaskTimeEntry {

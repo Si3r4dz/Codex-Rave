@@ -15,6 +15,7 @@ export default function SettingsModal({ isOpen, onClose, onSuccess }: SettingsMo
   const [settings, setSettings] = useState({
     default_hourly_rate: '',
     currency: 'PLN',
+    daily_hours_target: '8',
   });
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function SettingsModal({ isOpen, onClose, onSuccess }: SettingsMo
         setSettings({
           default_hourly_rate: data.default_hourly_rate || '',
           currency: data.currency || 'PLN',
+          daily_hours_target: data.daily_hours_target || '8',
         });
       }
     } catch (err) {
@@ -141,6 +143,26 @@ export default function SettingsModal({ isOpen, onClose, onSuccess }: SettingsMo
                 <option value="EUR">EUR (Euro)</option>
                 <option value="GBP">GBP (British Pound)</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+                Daily Hours Target
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="1"
+                max="24"
+                value={settings.daily_hours_target}
+                onChange={(e) => setSettings({ ...settings, daily_hours_target: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                required
+                disabled={loading}
+              />
+              <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+                Standard hours you work per day (used to calculate monthly goal)
+              </p>
             </div>
 
             <div className="flex justify-end gap-3 mt-6">

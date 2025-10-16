@@ -34,6 +34,18 @@ function initializeDatabase() {
       value TEXT NOT NULL,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+    
+    CREATE TABLE IF NOT EXISTS holidays (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      year INTEGER NOT NULL,
+      country_code TEXT DEFAULT 'PL',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_holidays_date ON holidays(date);
+    CREATE INDEX IF NOT EXISTS idx_holidays_year ON holidays(year);
   `;
   
   db.exec(createTablesSQL);
@@ -46,6 +58,7 @@ function initializeDatabase() {
     const insertSetting = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)');
     insertSetting.run('default_hourly_rate', defaultRate);
     insertSetting.run('currency', 'PLN');
+    insertSetting.run('daily_hours_target', '8');
   }
 }
 
@@ -155,6 +168,35 @@ export const settingsDb = {
       acc[row.key] = row.value;
       return acc;
     }, {} as Record<string, string>);
+  }
+};
+
+// Holidays operations
+export const holidaysDb = {
+  getByYear(year: number): Array<{ date: string; name: string }> {
+    const stmt = db.prepare('SELECT date, name FROM holidays WHERE year = ? ORDER BY date');
+    return stmt.all(year) as Array<{ date: string; name: string }>;
+  },
+  
+  bulkInsert(holidays: Array<{ date: string; name: string; year: number }>): void {
+    const stmt = db.prepare(`
+      INSERT OR IGNORE INTO holidays (date, name, year) 
+      VALUES (?, ?, ?)
+    `);
+    
+    const insertMany = db.transaction((holidays) => {
+      for (const holiday of holidays) {
+        stmt.run(holiday.date, holiday.name, holiday.year);
+      }
+    });
+    
+    insertMany(holidays);
+  },
+  
+  hasHolidaysForYear(year: number): boolean {
+    const stmt = db.prepare('SELECT COUNT(*) as count FROM holidays WHERE year = ?');
+    const result = stmt.get(year) as { count: number };
+    return result.count > 0;
   }
 };
 

@@ -12,7 +12,7 @@ import { StatCardSkeleton, TableSkeleton, ChartSkeleton } from '@/components/ui/
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [settings, setSettings] = useState<Settings>({ default_hourly_rate: '50', currency: 'PLN' });
+  const [settings, setSettings] = useState<Settings>({ default_hourly_rate: '50', currency: 'PLN', daily_hours_target: '8' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
