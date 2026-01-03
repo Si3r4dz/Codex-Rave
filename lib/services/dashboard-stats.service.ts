@@ -1,5 +1,5 @@
 import { DashboardStats, ProjectStats, DailyStats, EverhourTimeEntry, ProjectRate } from '@/types';
-import { getCurrentMonthRange } from '../utils/date';
+import { getCurrentMonthRange, getMonthRange } from '../utils/date';
 import { roundToTwoDecimals, secondsToHours } from '../utils/formatters';
 import { fetchCurrentUserTimeEntries, fetchProjectNamesMap, getProjectIdFromEntry } from '../utils/everhour-utils';
 import { getRatesMap, getDefaultRate, getProjectRate } from '../utils/rates';
@@ -7,8 +7,10 @@ import { calculateMonthlyWorkingDays } from '../utils/working-days';
 import { settingsDb } from '../db';
 
 export class DashboardStatsService {
-  async calculateStats(): Promise<DashboardStats> {
-    const { startFormatted, endFormatted } = getCurrentMonthRange();
+  async calculateStats(month?: string): Promise<DashboardStats> {
+    const { startFormatted, endFormatted } = month 
+      ? getMonthRange(month) 
+      : getCurrentMonthRange();
     
     // Fetch all required data
     const { entries } = await fetchCurrentUserTimeEntries(startFormatted, endFormatted);
@@ -25,7 +27,7 @@ export class DashboardStatsService {
     // Calculate totals and goal
     const totalHours = this.calculateTotalHours(projects);
     const totalIncome = this.calculateTotalIncome(projects);
-    const monthlyGoal = await this.getMonthlyGoal();
+    const monthlyGoal = await this.getMonthlyGoal(month);
     
     return {
       total_hours: roundToTwoDecimals(totalHours),
@@ -48,7 +50,7 @@ export class DashboardStatsService {
     
     entries.forEach((entry) => {
       const projectId = getProjectIdFromEntry(entry);
-      const projectName = projectNamesMap.get(projectId) || entry.task.name || 'Unknown Project';
+      const projectName = projectNamesMap.get(projectId) || entry.task?.name || 'Unknown Project';
       
       if (!projectsMap.has(projectId)) {
         const rateInfo = ratesMap.get(projectId);
@@ -123,12 +125,12 @@ export class DashboardStatsService {
     return projects.reduce((sum, p) => sum + (p.income || 0), 0);
   }
   
-  private async getMonthlyGoal(): Promise<number> {
+  private async getMonthlyGoal(month?: string): Promise<number> {
     // Get daily hours target from settings (default 8)
     const dailyHoursTarget = parseFloat(settingsDb.get('daily_hours_target') || '8');
     
-    // Calculate working days in current month
-    const workingDays = await calculateMonthlyWorkingDays();
+    // Calculate working days in the specified or current month
+    const workingDays = await calculateMonthlyWorkingDays(month);
     
     // Monthly goal = working days * daily hours
     return Math.round(workingDays * dailyHoursTarget * 100) / 100;

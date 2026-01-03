@@ -18,6 +18,6 @@ export async function fetchProjectNamesMap() {
 }
 
 export function getProjectIdFromEntry(entry: EverhourTimeEntry): string {
-  return entry.task.projects?.[0] || 'unknown';
+  return entry.task?.projects?.[0] || 'unknown';
 }
 

@@ -13,11 +13,11 @@ export async function calculateDashboardStats(): Promise<DashboardStats> {
 
   // Fetch time entries from Everhour
   const everhourClient = getEverhourClient();
-  
+
   // First get current user to determine their ID
   const currentUser = await everhourClient.getCurrentUser();
   const userId = currentUser.id;
-  
+
   // Fetch time entries for the current user
   const timeEntries = await everhourClient.getTimeEntries(fromDate, toDate, userId);
 
@@ -28,19 +28,19 @@ export async function calculateDashboardStats(): Promise<DashboardStats> {
   // Fetch all project rates from database
   const projectRates = projectRatesDb.getAll();
   const ratesMap = new Map(projectRates.map(pr => [pr.everhour_project_id, pr]));
-  
+
   // Get default hourly rate from settings database
   const defaultRateSetting = settingsDb.get('default_hourly_rate');
   const defaultRate = parseFloat(defaultRateSetting || '0');
 
   // Aggregate by project
   const projectsMap = new Map<string, { name: string; seconds: number; rate: number | null; isDefaultRate: boolean }>();
-  
+
   timeEntries.forEach((entry: EverhourTimeEntry) => {
-    const projectId = entry.task.projects?.[0] || 'unknown';
+    const projectId = entry.task?.projects?.[0] || 'unknown';
     // Get the actual project name from Everhour projects
-    const projectName = projectNamesMap.get(projectId) || entry.task.name || 'Unknown Project';
-    
+    const projectName = projectNamesMap.get(projectId) || entry.task?.name || 'Unknown Project';
+
     if (!projectsMap.has(projectId)) {
       const rateInfo = ratesMap.get(projectId);
       const rate = rateInfo?.hourly_rate || (defaultRate > 0 ? defaultRate : null);
@@ -65,7 +65,7 @@ export async function calculateDashboardStats(): Promise<DashboardStats> {
   const projects: ProjectStats[] = Array.from(projectsMap.entries()).map(([id, data]) => {
     const hours = data.seconds / 3600;
     const income = data.rate !== null ? hours * data.rate : null;
-    
+
     return {
       project_id: id,
       project_name: data.name,
@@ -81,10 +81,10 @@ export async function calculateDashboardStats(): Promise<DashboardStats> {
 
   // Aggregate by day
   const dailyMap = new Map<string, { seconds: number; income: number }>();
-  
+
   timeEntries.forEach((entry: EverhourTimeEntry) => {
     const date = entry.date;
-    const projectId = entry.task.projects?.[0] || 'unknown';
+    const projectId = entry.task?.projects?.[0] || 'unknown';
     const rateInfo = ratesMap.get(projectId);
     const rate = rateInfo?.hourly_rate || (defaultRate > 0 ? defaultRate : 0);
     const hours = entry.time / 3600;
