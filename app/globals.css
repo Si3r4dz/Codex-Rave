@@ -65,3 +65,14 @@ body {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* Leaflet map fixes for Next.js */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Fix for marker icons in production */
+.leaflet-default-icon-path {
+  background-image: url(https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png);
+}

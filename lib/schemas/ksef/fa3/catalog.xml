@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <!-- FA(3) schema set (vendored locally for offline validation) -->
+  <uri name="http://crd.gov.pl/wzor/2025/06/25/13775/schemat.xsd" uri="schemat.xsd"/>
+
+  <!-- Imported dependencies referenced from schemat.xsd / downstream XSDs -->
+  <uri
+    name="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/StrukturyDanych_v10-0E.xsd"
+    uri="StrukturyDanych_v10-0E.xsd"
+  />
+  <uri
+    name="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/ElementarneTypyDanych_v10-0E.xsd"
+    uri="ElementarneTypyDanych_v10-0E.xsd"
+  />
+  <uri
+    name="http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/KodyKrajow_v10-0E.xsd"
+    uri="KodyKrajow_v10-0E.xsd"
+  />
+
+  <!-- Some XSDs occasionally appear without a scheme; map those too -->
+  <uri
+    name="crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/StrukturyDanych_v10-0E.xsd"
+    uri="StrukturyDanych_v10-0E.xsd"
+  />
+  <uri
+    name="crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/ElementarneTypyDanych_v10-0E.xsd"
+    uri="ElementarneTypyDanych_v10-0E.xsd"
+  />
+  <uri
+    name="crd.gov.pl/xml/schematy/dziedzinowe/mf/2022/01/05/eD/DefinicjeTypy/KodyKrajow_v10-0E.xsd"
+    uri="KodyKrajow_v10-0E.xsd"
+  />
+</catalog>
+
+

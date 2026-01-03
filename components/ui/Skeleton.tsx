@@ -18,13 +18,13 @@ export function Skeleton({ className }: SkeletonProps) {
 export function StatCardSkeleton() {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
-      <div className="flex items-start justify-between">
-        <div className="flex-1 space-y-3">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-3 w-20" />
-        </div>
+      <div className="flex items-center justify-between mb-2">
+        <Skeleton className="h-4 w-24" />
         <Skeleton className="h-12 w-12 rounded-lg" />
+      </div>
+      <div className="space-y-3">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-3 w-20" />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { eachDayOfInterval, isWeekend, format } from 'date-fns';
+import { eachDayOfInterval, isWeekend, format, parse } from 'date-fns';
 import { HolidaysService } from '../services/holidays.service';
 
 const holidaysService = new HolidaysService();
@@ -41,7 +41,18 @@ export async function calculateWorkingDays(
   }).length;
 }
 
-export async function calculateMonthlyWorkingDays(date: Date = new Date()): Promise<number> {
+export async function calculateMonthlyWorkingDays(monthOrDate?: string | Date): Promise<number> {
+  let date: Date;
+  
+  if (typeof monthOrDate === 'string') {
+    // Parse YYYY-MM format
+    date = parse(monthOrDate, 'yyyy-MM', new Date());
+  } else if (monthOrDate instanceof Date) {
+    date = monthOrDate;
+  } else {
+    date = new Date();
+  }
+  
   const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
   const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   

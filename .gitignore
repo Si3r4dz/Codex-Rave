@@ -42,3 +42,6 @@ next-env.d.ts
 
 # database
 /data/
+
+# invoices (generated XML/PDF exports)
+/data/invoices/

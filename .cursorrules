@@ -1,0 +1,167 @@
+# Freelance Dashboard - Coding Standards
+
+## Architecture Principles
+- Clean Architecture with separation of concerns
+- Service layer for business logic (lib/services/)
+- Utilities for reusable functions (lib/utils/)
+- Atomic, reusable components
+- Centralized schemas (lib/schemas/)
+
+## Frontend Guidelines
+- Atomic component design - break into smallest reusable pieces
+- Single responsibility per component
+- Reusable UI components in components/ui/
+- Props typing with TypeScript interfaces at top
+- Dark mode support in all components (dark: prefix)
+- 'use client' directive for client components
+- Component structure: imports → interface → hooks → helpers → render
+
+## Backend Guidelines
+- Single responsibility per API route (thin handlers only)
+- Business logic in service classes (lib/services/)
+- Service methods: public entry point + private helpers
+- Shared utilities in lib/utils/ (pure functions)
+- Centralized Zod schemas in lib/schemas/
+- Consistent error handling with handleApiError()
+- Extract duplicated logic into utilities if used 2+ times
+- Dynamic routing with `export const dynamic = 'force-dynamic'`
+
+## Code Quality
+- DRY (Don't Repeat Yourself) - extract duplicated code
+- Type safety with TypeScript and Zod validation
+- Meaningful variable/function names (no abbreviations)
+- No "fat" functions - break down complex logic into methods
+- No `any` types - use `unknown` if needed
+- Proper return types on all functions
+
+## Component Structure Template
+```typescript
+'use client'; // If needed
+
+import { ... } from '...';
+
+// 1. Props interface
+interface ComponentProps { ... }
+
+// 2. Component
+export default function Component(props: ComponentProps) {
+  // 3. State hooks
+  const [state, setState] = useState();
+  
+  // 4. Effects
+  useEffect(() => { ... }, []);
+  
+  // 5. Helper functions (or extract to utils if reusable)
+  const handleAction = () => { ... };
+  
+  // 6. Render
+  return <div>...</div>;
+}
+```
+
+## API Route Structure Template
+```typescript
+import { ServiceClass } from '@/lib/services/...';
+import { handleApiError } from '@/lib/utils/api-error';
+import { Schema } from '@/lib/schemas/...';
+
+const service = new ServiceClass();
+
+export async function GET() {
+  try {
+    const result = await service.method();
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleApiError(error, 'Failed to ...');
+  }
+}
+
+export const dynamic = 'force-dynamic';
+```
+
+## Service Layer Pattern
+```typescript
+export class MyService {
+  // Public method (main entry point)
+  async mainMethod(): Promise<Result> {
+    const data = await this.fetchData();
+    return this.processData(data);
+  }
+  
+  // Private helpers (single responsibility)
+  private async fetchData() { ... }
+  private processData(data) { ... }
+}
+```
+
+## Database
+- SQLite with better-sqlite3
+- CRUD operations in lib/db.ts
+- Transactions for bulk operations
+- Proper indexing on frequently queried columns
+- Export typed db objects: projectRatesDb, settingsDb, holidaysDb
+
+## Styling
+- Tailwind CSS for all styling (no CSS files)
+- Dark mode: dark:bg-slate-800, dark:text-slate-100
+- Responsive: mobile-first with md:, lg: breakpoints
+- Consistent spacing: gap-4, p-6, mb-4
+- Colors: blue for primary, slate for dark mode
+
+## Dependencies & Tools
+- date-fns for date manipulation
+- recharts for charts and visualizations
+- zod for validation schemas
+- framer-motion for animations
+- sonner for toast notifications
+- clsx + tailwind-merge for conditional classes
+
+## When to Create Utils
+✅ Function used in 2+ places
+✅ Pure function (no side effects)
+✅ General-purpose helper (formatting, calculations)
+❌ Component-specific logic (keep in component)
+❌ Single-use code
+
+## When to Create Service
+✅ Complex business logic
+✅ Data aggregation/calculation
+✅ Orchestrating multiple operations
+✅ API data transformation
+❌ Simple CRUD (use db.ts directly)
+❌ Single database query
+
+## When to Create Component
+✅ Reusable UI element
+✅ Complex piece of UI (50+ lines)
+✅ Separates concerns
+❌ Single-use inline markup (<10 lines)
+
+## File Organization
+```
+app/api/[route]/route.ts     → Thin handlers only
+lib/services/                 → Business logic classes
+lib/utils/                    → Pure helper functions
+lib/schemas/                  → Zod validation schemas
+components/ui/                → Atomic reusable components
+components/                   → Feature-specific components
+types/                        → TypeScript interfaces
+```
+
+## Existing Patterns to Follow
+- Service: DashboardStatsService, ProjectDetailsService, HolidaysService
+- Utils: formatters.ts, date.ts, everhour-utils.ts, rates.ts, working-days.ts
+- Schemas: settings.ts, project-rates.ts
+- Components: StatCard, ProjectTable, ProjectDetailsModal, SettingsModal
+- UI Components: Button, Card, Badge, Skeleton
+
+## Anti-Patterns to Avoid
+❌ Business logic in API routes
+❌ Duplicated code across files
+❌ Components doing multiple things
+❌ Inline Zod schemas in routes
+❌ Fat functions (>100 lines)
+❌ Missing error handling
+❌ No TypeScript types
+❌ Hardcoded values (use env or settings)
+
